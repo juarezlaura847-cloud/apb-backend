@@ -107,20 +107,77 @@ app.post("/api/2workers/webhook", async (req, res) => {
     console.log("Webhook recibido:");
     console.log(JSON.stringify(req.body, null, 2));
 
-    // Aquí después procesaremos la información y la guardaremos en Supabase.
+    if (!supabase) {
+      return res.status(500).json({
+        success: false,
+        error: "Supabase no conectado"
+      });
+    }
 
-    res.status(200).json({
+    const tarea = req.body.entities?.[0];
+
+    if (!tarea) {
+      return res.json({
+        success: true,
+        message: "No hay datos de tarea"
+      });
+    }
+
+    // Revisar si ya existe
+    const { data: existe } = await supabase
+      .from("equipos")
+      .select("id")
+      .eq("tw_id", String(tarea.taskID))
+      .maybeSingle();
+
+    if (existe) {
+      return res.json({
+        success: true,
+        message: "El equipo ya estaba registrado"
+      });
+    }
+
+
+    // Guardar nuevo equipo
+    const { error } = await supabase
+      .from("equipos")
+      .insert([
+        {
+          tw_id: String(tarea.taskID),
+          cliente: tarea.customerDescription,
+          Hospital: tarea.customerDescription,
+          colaborador_asignado: tarea.userToName,
+          fecha_ingreso: tarea.creationDate,
+          Estado: "Recibido",
+          Descripción: tarea.orientation,
+          falla_reportada: tarea.pendency,
+          identificador: tarea.externalId || ""
+        }
+      ]);
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    console.log("Equipo guardado en Supabase");
+
+    res.json({
       success: true,
-      message: "Webhook recibido correctamente"
+      message: "Equipo guardado correctamente"
     });
+
 
   } catch (error) {
-    console.error(error);
+
+    console.error("Error webhook:", error);
 
     res.status(500).json({
-      success: false,
-      error: error.message
+      success:false,
+      error:error.message
     });
+
   }
 });
 app.listen(PORT, () => {
