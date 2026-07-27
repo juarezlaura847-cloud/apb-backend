@@ -102,7 +102,27 @@ app.get("/equipos", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+app.post("/api/2workers/webhook", async (req, res) => {
+  try {
+    console.log("Webhook recibido:");
+    console.log(JSON.stringify(req.body, null, 2));
 
+    // Aquí después procesaremos la información y la guardaremos en Supabase.
+
+    res.status(200).json({
+      success: true,
+      message: "Webhook recibido correctamente"
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
 app.listen(PORT, () => {
   console.log(`Servidor funcionando en puerto ${PORT}`);
 });
