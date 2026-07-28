@@ -89,17 +89,32 @@ app.post("/api/data", async (req, res) => {
   }
 });
 
-app.get("/equipos", async (req, res) => {
+app.get("/api/equipos", async (req, res) => {
   try {
-    const supabaseData = await loadSupabaseData();
-    if (supabaseData) {
-      memoryStore.apb_equipos = supabaseData;
-      memoryStore.updatedAt = Date.now();
+
+    const { data, error } = await supabase
+      .from("equipos")
+      .select("*")
+      .order("id", { ascending: false });
+
+    if (error) {
+      throw error;
     }
 
-    res.json(memoryStore.apb_equipos);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.json({
+      success: true,
+      equipos: data
+    });
+
+  } catch(error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      success:false,
+      error:error.message
+    });
+
   }
 });
 app.post("/api/2workers/webhook", async (req, res) => {
