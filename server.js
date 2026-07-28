@@ -137,20 +137,8 @@ app.post("/api/2workers/webhook", async (req, res) => {
       });
     }
 
-const { data: columnas, error: errorConsulta } = await supabase
-  .from("equipos")
-  .select("*")
-  .limit(1);
-
-console.log("Consulta:");
-console.log(columnas);
-
-console.log("Error consulta:");
-console.log(errorConsulta);
-    // Guardar nuevo equipo
-    const { error } = await supabase
-      .from("equipos")
-      console.log("Insertando en Supabase:", {
+// Datos que se enviarán a Supabase
+const registro = {
   tw_id: String(tarea.taskID),
   cliente: tarea.customerDescription,
   hospital: tarea.customerDescription,
@@ -160,58 +148,20 @@ console.log(errorConsulta);
   descripcion: tarea.orientation,
   falla_reportada: tarea.pendency,
   identificador: tarea.externalId || ""
-});
+};
+
 console.log("=== INSERT WEBHOOK ===");
-console.log({
-  tw_id: String(tarea.taskID),
-  cliente: tarea.customerDescription,
-  hospital: tarea.customerDescription,
-  colaborador_asignado: tarea.userToName,
-  fecha_ingreso: tarea.creationDate,
-  estado: "Recibido",
-  descripcion: tarea.orientation,
-  falla_reportada: tarea.pendency,
-  identificador: tarea.externalId || ""
-});
-      .insert([
-  {
-    tw_id: String(tarea.taskID),
-    cliente: tarea.customerDescription,
-    hospital: tarea.customerDescription,
-    colaborador_asignado: tarea.userToName,
-    fecha_ingreso: tarea.creationDate,
-    estado: "Recibido",
-    descripcion: tarea.orientation,
-    falla_reportada: tarea.pendency,
-    identificador: tarea.externalId || ""
-  }
-]);
+console.log(registro);
 
+// Guardar nuevo equipo
+const { error } = await supabase
+  .from("equipos")
+  .insert([registro]);
 
-    if (error) {
-      throw error;
-    }
+if (error) {
+  console.error("Error Supabase:");
+  console.error(error);
+  throw error;
+}
 
-
-    console.log("Equipo guardado en Supabase");
-
-    res.json({
-      success: true,
-      message: "Equipo guardado correctamente"
-    });
-
-
-  } catch (error) {
-
-    console.error("Error webhook:", error);
-
-    res.status(500).json({
-      success:false,
-      error:error.message
-    });
-
-  }
-});
-app.listen(PORT, () => {
-  console.log(`Servidor funcionando en puerto ${PORT}`);
-});
+console.log("Equipo guardado en Supabase");
