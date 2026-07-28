@@ -151,18 +151,18 @@ console.log(errorConsulta);
     const { error } = await supabase
       .from("equipos")
       .insert([
-        {
-          tw_id: String(tarea.taskID),
-          cliente: tarea.customerDescription,
-          Hospital: tarea.customerDescription,
-          colaborador_asignado: tarea.userToName,
-          fecha_ingreso: tarea.creationDate,
-          Estado: "Recibido",
-          Descripción: tarea.orientation,
-          falla_reportada: tarea.pendency,
-          identificador: tarea.externalId || ""
-        }
-      ]);
+  {
+    tw_id: String(tarea.taskID),
+    cliente: tarea.customerDescription,
+    hospital: tarea.customerDescription,
+    colaborador_asignado: tarea.userToName,
+    fecha_ingreso: tarea.creationDate,
+    estado: "Recibido",
+    descripcion: tarea.orientation,
+    falla_reportada: tarea.pendency,
+    identificador: tarea.externalId || ""
+  }
+]);
 
 
     if (error) {
