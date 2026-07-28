@@ -150,6 +150,29 @@ console.log(errorConsulta);
     // Guardar nuevo equipo
     const { error } = await supabase
       .from("equipos")
+      console.log("Insertando en Supabase:", {
+  tw_id: String(tarea.taskID),
+  cliente: tarea.customerDescription,
+  hospital: tarea.customerDescription,
+  colaborador_asignado: tarea.userToName,
+  fecha_ingreso: tarea.creationDate,
+  estado: "Recibido",
+  descripcion: tarea.orientation,
+  falla_reportada: tarea.pendency,
+  identificador: tarea.externalId || ""
+});
+console.log("=== INSERT WEBHOOK ===");
+console.log({
+  tw_id: String(tarea.taskID),
+  cliente: tarea.customerDescription,
+  hospital: tarea.customerDescription,
+  colaborador_asignado: tarea.userToName,
+  fecha_ingreso: tarea.creationDate,
+  estado: "Recibido",
+  descripcion: tarea.orientation,
+  falla_reportada: tarea.pendency,
+  identificador: tarea.externalId || ""
+});
       .insert([
   {
     tw_id: String(tarea.taskID),

@@ -156,6 +156,8 @@ async function sincronizarEquipos(){
 
             const {error} = await supabase
                 .from("equipos")
+                console.log("=== UPSERT SYNC ===");
+console.log(registro);
                 .upsert(
                     registro,
                     {
