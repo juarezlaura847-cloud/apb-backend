@@ -137,7 +137,16 @@ app.post("/api/2workers/webhook", async (req, res) => {
       });
     }
 
+const { data: columnas, error: errorConsulta } = await supabase
+  .from("equipos")
+  .select("*")
+  .limit(1);
 
+console.log("Consulta:");
+console.log(columnas);
+
+console.log("Error consulta:");
+console.log(errorConsulta);
     // Guardar nuevo equipo
     const { error } = await supabase
       .from("equipos")
