@@ -1,5 +1,8 @@
 require("dotenv").config();
-
+console.log("=================================");
+console.log("SERVER CARGADO:");
+console.log(__filename);
+console.log("=================================");
 const express = require("express");
 const cors = require("cors");
 const app = express();
@@ -90,25 +93,17 @@ app.post("/api/data", async (req, res) => {
 });
 
 app.get("/api/equipos", async (req, res) => {
+
   try {
 
-    const { data, error } = await supabase
-      .from("equipos")
-      .select("*")
-      .order("id", { ascending: false });
-
-    if (error) {
-      throw error;
-    }
+    const supabaseData = await loadSupabaseData();
 
     res.json({
-      success: true,
-      equipos: data
+      success:true,
+      equipos:supabaseData
     });
 
-  } catch(error) {
-
-    console.error(error);
+  } catch(error){
 
     res.status(500).json({
       success:false,
@@ -116,6 +111,7 @@ app.get("/api/equipos", async (req, res) => {
     });
 
   }
+
 });
 app.post("/api/2workers/webhook", async (req, res) => {
   try {
@@ -153,17 +149,19 @@ app.post("/api/2workers/webhook", async (req, res) => {
     }
 
 // Datos que se enviarán a Supabase
-const registro = {
-  tw_id: String(tarea.taskID),
-  cliente: tarea.customerDescription,
-  hospital: tarea.customerDescription,
-  colaborador_asignado: tarea.userToName,
-  fecha_ingreso: tarea.creationDate,
-  estado: "Recibido",
-  descripcion: tarea.orientation,
-  falla_reportada: tarea.pendency,
-  identificador: tarea.externalId || ""
-};
+.insert([
+{
+    tw_id: String(tarea.taskID),
+    cliente: tarea.customerDescription,
+    hospital: tarea.customerDescription,
+    colaborador_asignado: tarea.userToName,
+    fecha_ingreso: tarea.creationDate,
+    estado: "Recibido",
+    descripcion: tarea.orientation,
+    falla_reportada: tarea.pendency,
+    identificador: tarea.externalId || ""
+}
+]);
 
 console.log("=== INSERT WEBHOOK ===");
 console.log(registro);
@@ -197,7 +195,7 @@ res.json({
   }
 });
 
-
+console.log("Registrando ruta /api/equipos...");
 app.listen(PORT, () => {
   console.log(`Servidor funcionando en puerto ${PORT}`);
 });
