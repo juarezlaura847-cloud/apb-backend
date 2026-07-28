@@ -153,11 +153,9 @@ const registro = {
 console.log("=== INSERT WEBHOOK ===");
 console.log(registro);
 
-// Guardar nuevo equipo
 const { error } = await supabase
   .from("equipos")
   .insert([registro]);
-
 if (error) {
   console.error("Error Supabase:");
   console.error(error);
@@ -165,3 +163,26 @@ if (error) {
 }
 
 console.log("Equipo guardado en Supabase");
+
+res.json({
+  success: true,
+  message: "Equipo guardado correctamente"
+});
+
+
+  } catch (error) {
+
+    console.error("Error webhook:", error);
+
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+
+  }
+});
+
+
+app.listen(PORT, () => {
+  console.log(`Servidor funcionando en puerto ${PORT}`);
+});
