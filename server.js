@@ -93,17 +93,25 @@ app.post("/api/data", async (req, res) => {
 });
 
 app.get("/api/equipos", async (req, res) => {
-
   try {
 
-    const supabaseData = await loadSupabaseData();
+    const { data, error } = await supabase
+      .from("equipos")
+      .select("*")
+      .order("id", { ascending: false });
+
+    if (error) {
+      throw error;
+    }
 
     res.json({
       success:true,
-      equipos:supabaseData
+      equipos:data
     });
 
   } catch(error){
+
+    console.error(error);
 
     res.status(500).json({
       success:false,
@@ -111,7 +119,6 @@ app.get("/api/equipos", async (req, res) => {
     });
 
   }
-
 });
 app.post("/api/2workers/webhook", async (req, res) => {
   try {
