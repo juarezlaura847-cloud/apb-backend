@@ -248,6 +248,35 @@ export default function App() {
 
   const [isOnline, setIsOnline] = useState<boolean>(navigator.onLine);
 
+useEffect(() => {
+
+  const cargarEquipos = async () => {
+    try {
+
+      const respuesta = await fetch(
+        "https://apb-backend-p5gt.onrender.com/equipos"
+      );
+
+      const datos = await respuesta.json();
+
+      console.log("Equipos Render:", datos);
+
+     setEquipos(datos.equipos);
+
+      localStorage.setItem(
+        "apb_equipos",
+        JSON.stringify(datos)
+      );
+
+    } catch(error) {
+      console.error("Error cargando equipos:", error);
+    }
+  };
+
+  cargarEquipos();
+
+}, []);
+
   useEffect(() => {
     const handleOnline = () => {
       setIsOnline(true);
@@ -294,7 +323,7 @@ export default function App() {
 
   const postUpdate = async (updates: Record<string, any>) => {
     try {
-      const res = await fetch('/api/data', {
+      cconst res = await fetch('https://apb-backend-p5gt.onrender.com/api/data', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updates)
@@ -321,7 +350,7 @@ export default function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch('/api/data');
+        const res = await fetch('https://apb-backend-p5gt.onrender.com/api/data');
         if (res.ok) {
           setIsOnline(true);
           const contentType = res.headers.get('content-type');
