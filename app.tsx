@@ -261,11 +261,11 @@ useEffect(() => {
 
       console.log("Equipos Render:", datos);
 
-     setEquipos(datos.equipos);
+     setEquipos(datos.apb_equipos || []);
 
       localStorage.setItem(
         "apb_equipos",
-        JSON.stringify(datos)
+        JSON.stringify(datos.apb_equipos || [])
       );
 
     } catch(error) {
