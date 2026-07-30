@@ -95,76 +95,64 @@ async function sincronizarEquipos(){
 
         for(const tarea of tareas){
 
+console.log("================================");
+console.log("TAREA COMPLETA");
+console.log(JSON.stringify(tarea, null, 2));
+console.log("================================");
+
+const respuestas = tarea.questionnaires?.[0]?.answers || [];
+
+const obtenerRespuesta = (pregunta) => {
+  const r = respuestas.find(x =>
+    x.questionDescription
+      .toUpperCase()
+      .includes(pregunta.toUpperCase())
+  );
+
+  return r?.reply || "";
+};
+
+           const registro = {
+
+    tw_id: tarea.taskID,
+
+    nombre: obtenerRespuesta("EQUIPO"),
+
+    marca: obtenerRespuesta("MARCA"),
+
+    modelo: obtenerRespuesta("MODELO"),
+
+    numero_serie: obtenerRespuesta("NUMERO DE SERIE"),
+
+    descripcion: obtenerRespuesta("DESCRIPCION DEL TRABAJO"),
+
+    falla_reportada: obtenerRespuesta("FALLA ENCONTRADA"),
+
+    cliente: tarea.customerDescription,
+
+    hospital: tarea.customerDescription,
+
+    colaborador_asignado: tarea.userToName,
+
+    estado: convertirEstado(tarea.taskStatus),
+
+    fecha_ingreso: tarea.creationDate.split("T")[0],
+
+    identificador: tarea.externalId || ""
+};
 
 
-            const registro = {
+console.log("=== TAREA COMPLETA ===");
+console.log(JSON.stringify(tarea, null, 2));
 
+console.log("=== REGISTRO ===");
+console.log(JSON.stringify(registro, null, 2));
 
-                // ID ÚNICO DE 2WORKERS
-                tw_id: tarea.taskID,
-
-
-                // NOMBRE DEL SERVICIO
-                nombre: tarea.taskTypeDescription,
-
-
-                // CLIENTE
-                cliente: tarea.customerDescription,
-
-
-                hospital: tarea.customerDescription,
-
-
-                // DESCRIPCIÓN DEL TRABAJO
-                descripcion: tarea.orientation || "",
-
-
-                // REPORTE
-                falla_reportada:
-                    tarea.report || "Pendiente de diagnóstico",
-
-
-                // TÉCNICO
-                colaborador_asignado:
-                    tarea.userToName,
-
-
-                // ESTADO APB
-                estado:
-                    convertirEstado(tarea.taskStatus),
-
-
-                // FECHA
-                fecha_ingreso:
-                    tarea.creationDate.split("T")[0],
-
-
-                // IDENTIFICADOR
-                identificador:
-                    tarea.externalId || "",
-
-
-                // FOTOS
-                imagenes_antes_durante_despues:
-                    tarea.attachments
-                    ?.map(a => a.url)
-                    .join(",") || ""
-
-            };
-
-
-
-            const {error} = await supabase
-                .from("equipos")
-                console.log("=== UPSERT SYNC ===");
-console.log(registro);
-                .upsert(
-                    registro,
-                    {
-                        onConflict:"tw_id"
-                    }
-                );
-
+const { error } = await supabase
+    .from("equipos")
+    .upsert(registro, {
+        onConflict: "tw_id"
+    });
 
 
             if(error){
